@@ -1,5 +1,6 @@
 package ar.edu.unsam.algo2
 
+import ar.edu.unsam.algo2.repositorios.ID
 import org.uqbar.geodds.Point
 import java.awt.geom.Point2D.distance
 import java.time.LocalDate
@@ -40,6 +41,33 @@ class PerfilExigenteConNave : PerfilAptitud {
 class PerfilExplorador : PerfilAptitud {
     override fun restricciones(tripulante: Tripulante, mision: Mision) : Boolean {
         return !mision.planetaDestino.fueAterrizado
+    }
+}
+
+class PerfilTemerarios : PerfilAptitud {
+    override fun restricciones(tripulante: Tripulante, mision: Mision) : Boolean {
+        return mision.planetaDestino.esHabitable() || mision.esDeAltoRiesgo()
+    }
+}
+
+class PerfilSegunEdad : PerfilAptitud {
+    override fun restricciones(tripulante: Tripulante, mision: Mision) : Boolean {
+        if (tripulante.edadActual() % 2 == 0){
+            return PerfilTemerarios().restricciones(tripulante, mision)
+        }
+        return PerfilPrudente().restricciones(tripulante, mision)
+    }
+}
+
+class PerfilCompuestoY (private val perfiles: List<PerfilAptitud>): PerfilAptitud {
+    override fun restricciones(tripulante: Tripulante, mision: Mision): Boolean {
+        return perfiles.all{ it.restricciones(tripulante, mision) }
+    }
+}
+
+class PerfilCompuestoO (private val perfiles: List<PerfilAptitud>): PerfilAptitud {
+    override fun restricciones(tripulante: Tripulante, mision: Mision): Boolean {
+        return perfiles.any{ it.restricciones(tripulante, mision) }
     }
 }
 
@@ -100,7 +128,8 @@ class Tripulante (
     var historialMisiones: MutableList<Mision> = mutableListOf(),
     val kilometrosCercanos: Double,
     val ubicacionGeografica: Point,
-) {
+) : ID {
+    override var id: Int = 0
 
     public fun esValido() : Boolean{
         if (nombre.isBlank()) {
@@ -126,14 +155,14 @@ class Tripulante (
         return LocalDate.now().year - fechaInicioActividad.year
     }
 
-    fun expericencia() : Double {
+    fun experiencia() : Double {
         return aniosActivo().toDouble() +
                 (misionesExitosas / 2.0) +
                 (misionesParciales / 4.0) +
                 (misionesFracasadas / 2.0)
     }
 
-    fun cumpleCondicionesBase() : Boolean = expericencia() >= 3 && !estaEnMision
+    fun cumpleCondicionesBase() : Boolean = experiencia() >= 3 && !estaEnMision
 
     fun esAptoParaMision(mision: Mision) : Boolean = cumpleCondicionesBase() && perfilAptitud.restricciones(tripulante = this, mision = mision)
 

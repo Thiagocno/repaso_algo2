@@ -1,5 +1,6 @@
 package ar.edu.unsam.algo2
 
+import ar.edu.unsam.algo2.repositorios.ID
 import org.uqbar.geodds.Point
 
 class BaseDeLanzamiento(
@@ -7,7 +8,8 @@ class BaseDeLanzamiento(
     val direccion: Direccion,
     var navesEstacionadas: List<NaveEspacial>,
     val capacidadMaximaDeNaves: Int,
-) {
+) : ID {
+    override var id: Int = 0
 }
 
 data class Direccion(

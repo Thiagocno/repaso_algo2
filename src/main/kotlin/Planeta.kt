@@ -1,5 +1,6 @@
 package ar.edu.unsam.algo2
 
+import ar.edu.unsam.algo2.repositorios.ID
 import java.time.LocalDate
 
 class Planeta (
@@ -14,7 +15,8 @@ class Planeta (
     val fechaDeDescubrimiento: LocalDate,
     val distanciaATierra: Double,
     var fueAterrizado: Boolean = false,
-){
+) : ID{
+    override var id: Int = 0
 
     fun esValido() : Boolean{
         if (nombre.isBlank()) {

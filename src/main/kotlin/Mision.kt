@@ -1,5 +1,6 @@
 package ar.edu.unsam.algo2
 
+import ar.edu.unsam.algo2.repositorios.ID
 import java.time.LocalDate
 
 enum class EstadoMision {
@@ -18,7 +19,11 @@ class Mision (
     val tripulantes: MutableList<Tripulante> = mutableListOf(),
     val planetaDestino: Planeta,
     var carga: Double,
-){
+    var presupuesto: Double,
+    var subvencion: Subvencion? = null,
+    val configuracion: Configuracion,
+) : ID {
+    override var id: Int = 0
 
     public fun esValido() : Boolean{
         if (nombre.isBlank()) {
@@ -136,4 +141,38 @@ class Mision (
     private fun liberarNave() {
         naveAsignada.seEncuentraEnMision = false
     }
+
+    fun presupuestoFijo() : Double{
+        val base = costoCombustible() * configuracion.precioCombustible + costoSalarial()
+        val recargo = recargoPorRiesgo() + mantenimiento()
+
+        return base * recargo
+    }
+
+    fun recargoPorRiesgo() : Double{
+        if (!planetaDestino.esHabitable()){
+            return 0.2
+        }
+        return 0.0
+    }
+
+    fun mantenimiento(): Double{
+        if(!naveAsignada.esModerna()){
+            return 0.1
+        }
+        return 0.0
+    }
+
+    fun costoCombustible() : Double{
+        return naveAsignada.consumoTotal(planetaDestino.distanciaATierra, this)
+    }
+
+    fun costoSalarial() : Double{
+        val salariosTotales = tripulantes.sumOf { it.salarioTotal()  }
+        return salariosTotales * (duracionEstimada() / 30)
+    }
+}
+
+object Configuracion {
+    var precioCombustible = 500.0
 }

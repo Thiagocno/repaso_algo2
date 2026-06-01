@@ -1,18 +1,21 @@
 package ar.edu.unsam.algo2
 
+import ar.edu.unsam.algo2.repositorios.ID
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 abstract class NaveEspacial(
     val nombre: String,
-    val codigoDeIdentificacion: Int,
+    val codigoDeIdentificacion: String,
     val fechaDeFabricacion: LocalDate,
     val velocidadPromedio: Double,
     val autonomia: Double,
     val consumoBase: Double,
     var seEncuentraEnMision: Boolean = false,
     val baseAsignada: BaseDeLanzamiento,
-    ) {
+    ) : ID {
+
+    override var id: Int = 0
 
     public fun esValido() : Boolean{
         if (nombre.isBlank()) {
@@ -54,7 +57,7 @@ abstract class NaveEspacial(
 
 class Sonda(
     nombre: String,
-    codigoDeIdentificacion: Int,
+    codigoDeIdentificacion: String,
     fechaDeFabricacion: LocalDate,
     velocidadPromedio: Double,
     autonomia: Double,
@@ -70,7 +73,7 @@ class Sonda(
 
 class Transbordador(
     nombre: String,
-    codigoDeIdentificacion: Int,
+    codigoDeIdentificacion: String,
     fechaDeFabricacion: LocalDate,
     velocidadPromedio: Double,
     autonomia: Double,
@@ -88,7 +91,7 @@ class Transbordador(
 
 class Carguero(
     nombre: String,
-    codigoDeIdentificacion: Int,
+    codigoDeIdentificacion: String,
     fechaDeFabricacion: LocalDate,
     velocidadPromedio: Double,
     autonomia: Double,
